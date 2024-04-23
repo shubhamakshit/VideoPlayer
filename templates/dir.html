@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<style>
+    .hre {
+        text-decoration: none;
+        color: black;
+    }
+</style>
+<!-- <video id="player" playsinline controls>
+    <source src="http://localhost:6969/Nomenclature/11%20chap%2012%20%EF%BD%9C%EF%BD%9C%20%20IUPAC%20Nomenclature%2001%20%EF%BD%9C%EF%BD%9C%20Some%20Basic%20Principles%20and%20%20%20Naming%20Of%20Alkanes%20JEE%20MAINS%E2%A7%B8NEET%20%5BZgccHLOj3W4%5D.webm" type="video/mp4" />
+  </video> -->
+<ul class="list-group">
+
+    <a href="#" class="hre" onclick="goToParentDirectory()">
+        <li class="list-group-item"><i class="bi bi-arrow-90deg-up" style="margin-right: 1%;"></i> ..
+        </li>
+    </a>
+
+    {% for dir in folders %}
+    <a href="#" class="hre" onclick="moveToFolder('{{dir}}')">
+        <li class="list-group-item"><i class="bi bi-folder-fill" style="margin-right: 1%;"></i> {{dir}}
+        </li>
+    </a>
+    {% endfor %}
+
+    {% for file in files %}
+    <a href="#" class="hre list-group-item-action" onclick="moveTo('{{file}}')">
+        <li class="list-group-item"><i class="bi bi-play-circle-fill" style="margin-right: 1%;"></i> {{file |
+            url_decode}}
+        </li>
+    </a>
+    {% endfor %}
+
+
+</ul>
+<script>
+    function goToParentDirectory() {
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Find the last occurrence of '/'
+        var lastSlashIndex = currentUrl.lastIndexOf('/');
+
+        // Extract the substring up to the last occurrence of '/'
+        var parentUrl = currentUrl.substring(0, lastSlashIndex);
+
+        // Navigate to the parent directory
+        window.location.href = parentUrl;
+    }
+
+    function moveTo(name) {
+        var base = "http://localhost:6969"
+        var dir = window.location.pathname.replace('/', '')
+
+        window.location.href = `${base}/${dir}/${name}`
+    }
+
+    function moveToFolder(name)
+    {   
+        base = window.location.host.replace('/','')
+        dir = window.location.pathname.replace('/','')
+        window.location.href = `http://${base}/${dir===''?'':dir+'/'}${name}`;
+    }
+
+</script>
+
+{% endblock %}
