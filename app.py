@@ -4,21 +4,28 @@ from pathops import PathManipulator
 import os
 import html 
 import urllib
+import socket
+import subprocess
 
 app = Flask(__name__)
 
 FOLDER_MAIN = 'X:/OrganicByALAKHPANDEY'
 
 SERVER_STARTED = False 
-with open('server.prop.state','r') as f:
-    SERVER_STARTED = True if f.read().strip() == '1' else False
+# with open('server.prop.state','r') as f:
+#     SERVER_STARTED = True if f.read().strip() == '1' else False
 
 if not SERVER_STARTED:
-    os.system(f'start python -m http.server 6969  --directory {FOLDER_MAIN}')
-    SERVER_STARTED = True
-    with open('server.prop.state','w') as f:
-        f.write('1')
-    print('Server started at http://localhost:6969')
+    # Check if port 6969 is in use
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('localhost', 6969))
+    if result != 0:
+        subprocess.Popen(['python', '-m', 'http.server', '6969', '--directory', FOLDER_MAIN], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        SERVER_STARTED = True
+        with open('server.prop.state','w') as f:
+            f.write('1')
+        print('Server started at http://localhost:6969')
+    sock.close() 
 
 # Define custom filter function to decode URL-encoded string
 def url_decode(value):
