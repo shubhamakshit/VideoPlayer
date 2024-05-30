@@ -19,7 +19,7 @@
 
     {% for dir in folders %}
     <a href="#" class="hre" onclick="moveToFolder('{{dir}}')">
-        <li class="list-group-item"><i class="bi bi-folder-fill" style="margin-right: 1%;"></i> {{dir}}
+        <li class="list-group-item"><i class="bi bi-folder-fill" style="margin-right: 1%;"></i> {{dir | url_decode}}
         </li>
     </a>
     {% endfor %}
@@ -50,10 +50,11 @@
     }
 
     function moveTo(name) {
-        var base = "http://localhost:6969"
+        var base = "{{server}}";
         var dir = window.location.pathname.replace('/', '')
 
-        window.location.href = `${base}/${dir}/${name}`
+        window.location.href = `/play?video=${base}/${dir}/${name}`;
+       // window.location.href = `${base}/${dir}/${name}`;
     }
 
     function moveToFolder(name)

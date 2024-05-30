@@ -1,31 +1,23 @@
 import urllib.parse
 from flask import *
 from pathops import PathManipulator
-import os
-import html 
+from net import NetUtils
 import urllib
-import socket
-import subprocess
-
+from flask import jsonify
 app = Flask(__name__)
 
-FOLDER_MAIN = 'X:/OrganicByALAKHPANDEY'
+# Get local IP address
+ipv4_address = NetUtils.get_local_ip()
+FOLDER_MAIN = 'C:/Users/Akshit/ELectricCurrent'
 
-SERVER_STARTED = False 
-# with open('server.prop.state','r') as f:
-#     SERVER_STARTED = True if f.read().strip() == '1' else False
+SERVER_STARTED = False # legacy method to check if server has been started
+
+SERVER_PORT = 6969
 
 if not SERVER_STARTED:
-    # Check if port 6969 is in use
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex(('localhost', 6969))
-    if result != 0:
-        subprocess.Popen(['python', '-m', 'http.server', '6969', '--directory', FOLDER_MAIN], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        SERVER_STARTED = True
-        with open('server.prop.state','w') as f:
-            f.write('1')
-        print('Server started at http://localhost:6969')
-    sock.close() 
+    NetUtils.server(ipv4_address, SERVER_PORT, FOLDER_MAIN)
+
+     
 
 # Define custom filter function to decode URL-encoded string
 def url_decode(value):
@@ -46,8 +38,18 @@ def get_folder_structure(folder=''):
 
         
 
-    return render_template('dir.html',files=files,folders=folders)
-    
+    return render_template('dir.html',files=files,folders=folders,server=f'http://{ipv4_address}:{SERVER_PORT}',home= True if folder == [] else False)
+
+# @app.route('/playUrl', methods=['POST'])
+# def redirect_to_play():
+#     data = request.get_json()
+#     url = data['url']
+#     print(f'Debugging: {url}') 
+#     return "hello"
+
+@app.route('/play')
+def play():
+    return render_template('player.html', video = request.args.get('video'))
 
 # @app.route('/')
 # def main():
@@ -55,4 +57,4 @@ def get_folder_structure(folder=''):
 
 if __name__ == '__main__':
     app.jinja_env.filters['url_decode'] = url_decode
-    app.run(port=5000,host='0.0.0.0',debug=True) 
+    app.run(port=5000, host='0.0.0.0', debug=True) 
